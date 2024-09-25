@@ -108,7 +108,7 @@ class AdminController extends Controller
             $admin->password = $req->password;
         }
         $admin->updated_by = admin()->id;
-        $admin->save();
+        $admin->update();
         session()->flash('success', "$admin->name updated successfully");
         return redirect()->route('admin.index');
     }
@@ -130,7 +130,7 @@ class AdminController extends Controller
         $admin = Admin::findOrFail($id);
         $admin->status = !$admin->status;
         $admin->updated_by = admin()->id;
-        $admin->save();
+        $admin->update();
         session()->flash('success', "$admin->name status updated successfully");
         return redirect()->route('admin.index');
     }

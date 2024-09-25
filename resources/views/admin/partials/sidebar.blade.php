@@ -30,8 +30,14 @@
               </li>
               <li class="nav-item  @if($page_slug == 'admin') active @endif">
                 <a href="{{route('admin.index')}}">
-                  <i class="fas fa-users"></i>
+                  <i class="fas fa-user-check"></i>
                   <p>Admins</p>
+                </a>
+              </li>
+              <li class="nav-item  @if($page_slug == 'user') active @endif">
+                <a href="{{route('user.index')}}">
+                  <i class="fas fa-users"></i>
+                  <p>Users</p>
                 </a>
               </li>
 
