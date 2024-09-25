@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'status',
+        'email_sent_at',
+        'email_verified_at',
     ];
 
     /**
@@ -40,6 +44,61 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'email_sent_at' => 'datetime',
+        'status' => 'boolean',
         'password' => 'hashed',
     ];
+
+
+    public function creater()
+    {
+        return $this->morphTo();
+    }
+    public function updater()
+    {
+        return $this->morphTo();
+    }
+    public function deleter()
+    {
+        return $this->morphTo();
+    }
+
+
+    public function getStatusBadgeTitle()
+    {
+        if ($this->status == 1) {
+            return 'Active';
+        } else {
+            return 'Deactive';
+        }
+    }
+    public function getStatusBtnTitle()
+    {
+        if ($this->status == 1) {
+            return 'Deactive';
+        } else {
+            return 'Active';
+        }
+    }
+
+    public function getStatusBtnBg()
+    {
+        if ($this->status == 1) {
+            return 'btn btn-danger';
+        } else {
+            return 'btn btn-success';
+        }
+    }
+    public function getStatusBadgeBg()
+    {
+        if ($this->status == 1) {
+            return 'badge badge-success';
+        } else {
+            return 'badge badge-warning';
+        }
+    }
+    public function scopeActive($query)
+    {
+        return $query->where('status', 1);
+    }
 }
