@@ -38,7 +38,7 @@
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
                                 <p class="card-category">{{__('Total Users')}}</p>
-                                <h4 class="card-title">{{count($admins)}}</h4>
+                                <h4 class="card-title">{{count($users)}}</h4>
                             </div>
                         </div>
                     </div>
@@ -56,8 +56,8 @@
                         </div>
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
-                                <p class="card-category">Sales</p>
-                                <h4 class="card-title">$ 1,345</h4>
+                                <p class="card-category">{{__('Pending Tickets')}}</p>
+                                <h4 class="card-title">{{$tickets->where('status',0)->count()}}</h4>
                             </div>
                         </div>
                     </div>
@@ -75,8 +75,27 @@
                         </div>
                         <div class="col col-stats ms-3 ms-sm-0">
                             <div class="numbers">
-                                <p class="card-category">Order</p>
-                                <h4 class="card-title">576</h4>
+                                <p class="card-category">{{__('Open Tickets')}}</p>
+                                <h4 class="card-title">{{$tickets->where('status',1)->count()}}</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-md-3">
+            <div class="card card-stats card-round">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-icon">
+                            <div class="icon-big text-center icon-secondary bubble-shadow-small">
+                                <i class="far fa-check-circle"></i>
+                            </div>
+                        </div>
+                        <div class="col col-stats ms-3 ms-sm-0">
+                            <div class="numbers">
+                                <p class="card-category">{{__('Closed Tickets')}}</p>
+                                <h4 class="card-title">{{$tickets->where('status',2)->count()}}</h4>
                             </div>
                         </div>
                     </div>
