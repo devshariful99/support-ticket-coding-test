@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('user.layouts.master', ['page_slug' => 'email'])
 
 @section('content')
 <div class="container">

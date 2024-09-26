@@ -17,21 +17,44 @@ trait FileManagementTrait
      * @param string $folderName The folder to store the image
      * @return void
      */
-    public function handleFileUpload(Request $request, $model, $fileField = 'image', $folderName = 'uploads/')
+    public function handleFileUpload(Request $request, $model, $fileField = 'image', $folderName = 'uploads/', $multiple = false)
     {
         // Check if the request has a file
-        if ($request->hasFile($fileField)) {
-            $file = $request->file($fileField);
-            $fileName = $request->name . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs($folderName, $fileName, 'public');
+        if ($multiple) {
+            if ($request->hasFile($fileField)) {
+                $files = $request->file($fileField);
+                $filePaths = [];
 
-            // If the model already has an file, delete the old one
-            if ($model->$fileField) {
-                Storage::disk('public')->delete($model->$fileField);
+                foreach ($files as $index => $file) {
+                    $fileName = $request->name . '_' . time() . '_' . $index . '.' . $file->getClientOriginalExtension();
+                    $path = $file->storeAs($folderName, $fileName, 'public');
+                    $filePaths[] = $path;
+                }
+
+                // If the model already has files, delete the old ones
+                if ($model->$fileField) {
+                    foreach (json_decode($model->$fileField) as $oldFilePath) {
+                        $this->fileDelete($oldFilePath);
+                    }
+                }
+
+                // Assign the new images path as a JSON array to the model
+                $model->$fileField = json_encode($filePaths);
             }
+        } else {
+            if ($request->hasFile($fileField)) {
+                $file = $request->file($fileField);
+                $fileName = $request->name . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $path = $file->storeAs($folderName, $fileName, 'public');
 
-            // Assign the new image path to the model
-            $model->$fileField = $path;
+                // If the model already has an file, delete the old one
+                if ($model->$fileField) {
+                    $this->fileDelete($model->$fileField);
+                }
+
+                // Assign the new image path to the model
+                $model->$fileField = $path;
+            }
         }
     }
     public function fileDelete($file)

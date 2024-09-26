@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('user.layouts.master', ['page_slug' => 'reset'])
 
 @section('content')
 <div class="container">

@@ -73,3 +73,21 @@ function deleter_name($deleter)
 {
     return $deleter->name ?? 'Null';
 }
+
+function generateTicketNumber()
+{
+    $time = substr(time(), -5);
+
+    // Generate a random 5-character string
+    $randomString = strtoupper(Str::random(5));
+
+    // Combine the time and random string to form a 10-character ticket number
+    return  '#' . $randomString . $time;
+}
+
+function isImage($path)
+{
+    $imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'svg'];
+    $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    return in_array($extension, $imageExtensions);
+}

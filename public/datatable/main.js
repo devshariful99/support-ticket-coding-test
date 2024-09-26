@@ -6,8 +6,15 @@ function initializeDataTable({
     order_route = "",
     model = "",
     table_columns = [], // Array for defining table columns
+    rowOrder = true,
 } = {}) {
     $(function () {
+        if(rowOrder){ 
+            rowOrder = {
+                selector: "td:last-child .reorder",
+                update: true,
+            };
+        }
         var table = $(main_class).DataTable({
             dom: "Bfrtip",
             colReorder: true,
@@ -15,10 +22,7 @@ function initializeDataTable({
             processing: true,
             serverSide: true,
             iDisplayLength: displayLength,
-            rowReorder: {
-                selector: "td:last-child .reorder",
-                update: true,
-            },
+            rowReorder: rowOrder,
             buttons: [
                 "copy",
                 {
@@ -69,45 +73,47 @@ function initializeDataTable({
                 }),
             ],
         });
-
-        table.on("row-reorder", function (e, diff, edit) {
-            let orderData = [];
-            for (var i = 0; i < diff.length; i++) {
-                let rowData = table.row(diff[i].node).data();
-
-                // Collect the IDs and new order for the server
-                orderData.push({
-                    id: rowData.id, // Assuming the ID is part of the data
-                    newOrder: diff[i].newPosition,
-                });
-            }
-
-            // If newOrder is not empty, send it to the server
-            if (orderData.length > 0) {
-                $.ajax({
-                    url: order_route, // Your route for sorting update
-                    type: "POST",
-                    data: {
-                        model: model,
-                        datas: orderData,
-                        _token: document
-                            .querySelector('meta[name="csrf-token"]')
-                            .getAttribute("content"),
-                    },
-                    success: function (response) {
-
-                        if (response.success) {
-                            toastr.success(response.message);
-                        } else {
-                            handleErrors(response);
-                        }
-                        table.ajax.reload(); // Reload the table to reflect changes
-                    },
-                    error: function (error) {
-                        toastr.error("Something went wrong. Please try again.");
-                    },
-                });
-            }
-        });
+        if(rowOrder){
+            table.on("row-reorder", function (e, diff, edit) {
+                let orderData = [];
+                for (var i = 0; i < diff.length; i++) {
+                    let rowData = table.row(diff[i].node).data();
+    
+                    // Collect the IDs and new order for the server
+                    orderData.push({
+                        id: rowData.id, // Assuming the ID is part of the data
+                        newOrder: diff[i].newPosition,
+                    });
+                }
+    
+                // If newOrder is not empty, send it to the server
+                if (orderData.length > 0) {
+                    $.ajax({
+                        url: order_route, // Your route for sorting update
+                        type: "POST",
+                        data: {
+                            model: model,
+                            datas: orderData,
+                            _token: document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute("content"),
+                        },
+                        success: function (response) {
+    
+                            if (response.success) {
+                                toastr.success(response.message);
+                            } else {
+                                handleErrors(response);
+                            }
+                            table.ajax.reload(); // Reload the table to reflect changes
+                        },
+                        error: function (error) {
+                            toastr.error("Something went wrong. Please try again.");
+                        },
+                    });
+                }
+            });
+        }
+       
     });
 }
