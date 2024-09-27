@@ -16,9 +16,9 @@ class DashboardController extends Controller
 
     public function dashboard(Request $request)
     {
-        $tickets = Ticket::where('creater_id', user()->id)->where('creater_type', get_class(user()))->orderBy('status', 'desc')->get();
+        $tickets = Ticket::where('creater_id', user()->id)->where('creater_type', get_class(user()))->latest()->get();
         if ($request->ajax()) {
-            $tickets = $tickets->sortBy('sort_order');
+            $tickets = $tickets->sortBy('status');
             return DataTables::of($tickets)
                 ->editColumn('title', function ($ticket) {
                     return str_limit($ticket->title, 30);

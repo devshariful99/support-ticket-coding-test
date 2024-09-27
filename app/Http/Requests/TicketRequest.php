@@ -22,8 +22,8 @@ class TicketRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|min:6|max:60',
-            'description' => 'required|min:30|max:500',
+            'title' => 'required|min:6',
+            'description' => 'required|min:30',
             'files' => 'nullable|array',
             'files.*' => 'nullable|file|mimes:mimes:jpeg,png,jpg,gif,bmp,svg,webp,pdf,doc,docx,csv|max:5000',
         ];

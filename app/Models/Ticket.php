@@ -30,7 +30,7 @@ class Ticket extends BaseModel
     {
         switch ($this->status) {
             case 1:
-                return 'badeg bg-success';
+                return 'badge bg-success';
             case 2:
                 return 'badge bg-secondary';
             default:

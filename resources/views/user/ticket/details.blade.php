@@ -8,17 +8,19 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="cart-title">{{ __($ticket->title." - ($ticket->ticket_number)") }}</h4>
+                    <div class="d-flex align-items-center gap-2">
+                        <h4 class="cart-title fw-bold">{{ __($ticket->title." - ($ticket->ticket_number)") }}</h4><sup><span class="{{$ticket->getStatusBadgeBg()}}">{{ $ticket->getStatusBadgeTitle() }}</span></sup>
+                    </div>
                     @include('user.includes.button', [
                             'routeName' => 'user.dashboard',
                             'label' => 'Back',
                         ])
                 </div>
-                <div class="card-body">
+                <div class="card-body bg-secondary">
                     <div class="row">
                         <div class="col-12">
                             <div class="description">
-                                <p class="text-muted text-justify">{!! $ticket->description !!}</p>
+                                <p class="text-white fs-5" style="text-align: justify">{!! $ticket->description !!}</p>
                             </div>
                         </div>
                         <div class="col-12">
@@ -45,6 +47,15 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="card-footer" style="min-height: 50vh; max-height: 80vh; overflow-y: auto; background-color: transparent">
+                    @if($ticket->status == 0)
+                        <h4>{{__('Waiting for response...')}}</h4>
+                    @else
+                        @foreach ($ticket->messages as $message)
+                            
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>
