@@ -41,7 +41,7 @@ class UserRequest extends FormRequest
     protected function update(): array
     {
         return [
-            'email' => 'required|unique:users,email,' . $this->route('admin'),
+            'email' => 'required|unique:users,email,' . $this->route('user'),
             'password' => 'nullable|min:6|confirmed',
             'image' => 'nullable|image|mimes:jpeg,png,gif,jpg,webp',
         ];

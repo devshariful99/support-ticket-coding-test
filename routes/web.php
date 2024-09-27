@@ -68,7 +68,7 @@ Route::group(['middleware' => 'auth', 'as' => 'user.', 'prefix' => 'user-panel']
 
 
     Route::get('/', [UserDashboardController::class, 'dashboard'])->name('dashboard');
-    Route::put('/profile/update/{admin}', [UserDashboardController::class, 'profileUpdate'])->name('profile.update');
+    Route::put('/profile/update/{user}', [UserDashboardController::class, 'profileUpdate'])->name('profile.update');
     Route::controller(UserTicketController::class)->prefix('ticket')->name('ticket.')->group(function () {
         Route::get('/index', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
