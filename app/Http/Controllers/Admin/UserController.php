@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use App\Http\Traits\AuditColumnsDataTrait;
 use App\Http\Traits\FileManagementTrait;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 use Yajra\DataTables\DataTables;
 
 class UserController extends Controller
@@ -54,7 +57,7 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.user_management.create');
     }
@@ -62,7 +65,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(UserRequest $req)
+    public function store(UserRequest $req): RedirectResponse
     {
         $user = new User();
         $this->handleFileUpload($req, $user, 'image', 'users/');
@@ -78,7 +81,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         $data = User::findOrFail($id);
         $this->MorphAuditColumnsData($data);
@@ -89,7 +92,7 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id)
+    public function edit(int $id): View
     {
         $data['user'] = User::findOrFail($id);
         return view('admin.user_management.edit', $data);
@@ -98,7 +101,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UserRequest $req, int $id)
+    public function update(UserRequest $req, int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
         $this->handleFileUpload($req, $user, 'image', 'users/');
@@ -116,7 +119,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id)
+    public function destroy(int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
         $user->deleter()->associate(admin());
@@ -126,7 +129,7 @@ class UserController extends Controller
         return redirect()->route('user.index');
     }
 
-    public function status(int $id)
+    public function status(int $id): RedirectResponse
     {
         $user = User::findOrFail($id);
         $user->status = !$user->status;

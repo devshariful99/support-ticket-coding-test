@@ -7,13 +7,16 @@ use App\Http\Controllers\Admin\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\DatatableController as AdminDatatableController;
 use App\Http\Controllers\Admin\FileManageController as AdminFileManageController;
+use App\Http\Controllers\Admin\MessageController as AdminMessageController;
+use App\Http\Controllers\Admin\TicketController as AdminTicketController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 
 
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\DatatableController as UserDatatableController;
 use App\Http\Controllers\User\FileManageController as UserFileManageController;
-use App\Http\Controllers\User\TicketController;
+use App\Http\Controllers\User\MessageController as UserMessageController;
+use App\Http\Controllers\User\TicketController as UserTicketController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,15 +51,27 @@ Route::group(['middleware' => 'admin', 'prefix' => 'admin-panel'], function () {
 
     Route::resource('user', AdminUserController::class);
     Route::get('user/status/{user}', [AdminUserController::class, 'status'])->name('user.status');
+
+    Route::controller(AdminTicketController::class)->prefix('ticket')->name('ticket.')->group(function () {
+        Route::get('/index', 'index')->name('index');
+        Route::get('/details/{id}', 'details')->name('details');
+        Route::get('/details/close/{id}', 'close')->name('close');
+    });
+    Route::controller(AdminMessageController::class)->prefix('message')->name('message.')->group(function () {
+        Route::post('/send', 'message')->name('send');
+    });
 });
 
 Route::group(['middleware' => 'auth', 'as' => 'user.', 'prefix' => 'user-panel'], function () {
     Route::get('file/download/{file}', [UserFileManageController::class, 'download'])->name('file.download');
     Route::post('update/sort/order', [UserDatatableController::class, 'updateSortOrder'])->name('update.sort.order');
     Route::get('/', [UserDashboardController::class, 'dashboard'])->name('dashboard');
-    Route::controller(TicketController::class)->prefix('ticket')->name('ticket.')->group(function () {
+    Route::controller(UserTicketController::class)->prefix('ticket')->name('ticket.')->group(function () {
         Route::get('/create', 'create')->name('create');
         Route::post('/create', 'store')->name('create');
         Route::get('/details/{id}', 'details')->name('details');
+    });
+    Route::controller(UserMessageController::class)->prefix('message')->name('message.')->group(function () {
+        Route::post('/send', 'message')->name('send');
     });
 });

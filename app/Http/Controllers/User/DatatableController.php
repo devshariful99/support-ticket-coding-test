@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DatatableOrderRequest;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
 
 class DatatableController extends Controller
 {
@@ -15,7 +16,7 @@ class DatatableController extends Controller
         $this->middleware('auth');
     }
 
-    public function updateSortOrder(DatatableOrderRequest $request)
+    public function updateSortOrder(DatatableOrderRequest $request): JsonResponse
     {
         try {
             $modelClass = '\\App\\Models\\' . $request->model;

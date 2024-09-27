@@ -1,6 +1,7 @@
-@extends('user.layouts.master', ['page_slug' => 'ticket-details'])
+@extends('admin.layouts.master', ['page_slug' => 'ticket'])
 @push('css')
     <link rel="stylesheet" href="{{ asset('custom_litebox/litebox.css') }}">
+
     <style>
         .message_wrap::-scrollbar-track {
         box-shadow: inset 0 0 6px rgba(0,0,0,0.9);
@@ -49,7 +50,7 @@
     </style>
 @endpush
 @section('content')
-<div class="container">
+
     <div class="row">
         <div class="col-12">
             <div class="card">
@@ -58,7 +59,7 @@
                         <h4 class="cart-title fw-bold">{{ __($ticket->title." - ($ticket->ticket_number)") }}</h4><sup class="ticket_status"><span class="{{$ticket->getStatusBadgeBg}}">{{ $ticket->getStatusBadgeTitle }}</span></sup>
                     </div>
                     @include('user.includes.button', [
-                            'routeName' => 'user.dashboard',
+                            'routeName' => 'ticket.index',
                             'label' => 'Back',
                         ])
                 </div>
@@ -85,7 +86,7 @@
                                     </div>
                                 @else
                                     <a class="btn btn-info btn-sm"
-                                        href="{{ route('user.file.download', encrypt($file)) }}"><i
+                                        href="{{ route('admin.file.download', encrypt($file)) }}"><i
                                             class="fas fa-download"></i></a>
                                 @endif
                             @endforeach
@@ -103,12 +104,12 @@
                                 @else
                                     @foreach ($ticket->messages as $message)
                                         <div class="col-12 mb-2">
-                                            <div class="message d-flex gap-3 max-w-50 align-items-center {{$message->author == 'User' ? 'float-end' : 'float-start'}}" >
-                                                @if($message->author == 'Admin')
+                                            <div class="message d-flex gap-3 max-w-50 align-items-center {{$message->author == 'Admin' ? 'float-end' : 'float-start'}}" >
+                                                @if($message->author == 'User')
                                                     <img style="height: 40px; width: 40px; object-fit: cover; object-position: center; border: 1px solid #28A349" src="{{ $message->author_image }}" class="rounded-circle p-1" alt="">
                                                 @endif
-                                                <p class="text-white fs-6 p-2 m-0 rounded {{$message->author == 'Admin' ? 'bg-info' : 'bg-primary'}}" style="text-align: justify">{!! $message->message !!}</p>
-                                                @if($message->author == 'User')
+                                                <p class="text-white fs-6 p-2 m-0 rounded {{$message->author == 'User' ? 'bg-info' : 'bg-primary'}}" style="text-align: justify">{!! $message->message !!}</p>
+                                                @if($message->author == 'Admin')
                                                     <img style="height: 40px; width: 40px; object-fit: cover; object-position: center; border: 1px solid #28A349" src="{{ $message->author_image }}" class="rounded-circle p-1" alt="">
                                                 @endif
                                             </div>
@@ -122,15 +123,23 @@
                         <div class="col-12">
                             @if($ticket->status == 2)
                                 <h4 class="cart-title text-center text-danger" >{{__('Ticket Closed')}}</h4>
-                            @elseif($ticket->status == 1)
-                                <form id="ticketMessageForm" action="{{ route('user.message.send') }}" method="POST" enctype="multipart/form-data">
+                            @else
+                                <form id="ticketMessageForm" action="{{ route('message.send') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">
                                     <div class="form-group">
-                                        <label for="message">{{__('Message')}}</label>
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <label for="message">{{__('Message')}}</label>
+                                            <div class="ticket_close_button">
+                                                @if($ticket->status == 1)
+                                                    <a href="{{ route('ticket.close', encrypt($ticket->id)) }}" class="btn btn-danger"> {{__('Ticket Close')}}</a>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        
                                         <textarea name="message" id="message_text" class="form-control" rows="5"></textarea> 
                                     </div>
-                                    <div class="form-group float-end mt-2">
+                                    <div class="form-group float-end">
                                         <input type="submit" class="btn btn-primary" value="Send">
                                     </div>
                                 </form>
@@ -141,7 +150,7 @@
             </div>
         </div>
     </div>
-</div>
+
 @endsection
 @push('js')
     <script src="{{ asset('custom_litebox/litebox.js') }}"></script>
@@ -151,12 +160,10 @@
             const messageContainer = $('.message_wrap');
             messageContainer.scrollTop(messageContainer[0].scrollHeight);
         }
-
-        // Scroll to the bottom when the page loads
-        
         $(document).ready(function() {
             scrollToBottom();
             $('#ticketMessageForm').on('submit', function(e) {
+                
                 e.preventDefault(); // Prevent default form submission
                 
                 let formData = new FormData(this); // Create a FormData object to handle file uploads
@@ -175,12 +182,12 @@
                         if (response.success) {
                             let result = `
                                 <div class="col-12 mb-2">
-                                        <div class="message d-flex gap-3 max-w-50 align-items-center ${response.data.author == 'User' ? 'float-end' : 'float-start'}" >`;
-                            if(response.data.author == 'Admin'){
+                                        <div class="message d-flex gap-3 max-w-50 align-items-center ${response.data.author == 'Admin' ? 'float-end' : 'float-start'}" >`;
+                            if(response.data.author == 'User'){
                                 result+=`<img style="height: 40px; width: 40px; object-fit: cover; object-position: center; border: 1px solid #28A349" src="${response.data.author_image}" class="rounded-circle p-1" alt="">`;
                             }
-                            result+=`<p class="text-white fs-6 p-2 m-0 rounded ${response.data.author == 'Admin' ? 'bg-info' : 'bg-primary'}" style="text-align: justify">${response.data.message}</p>`;
-                            if(response.data.author == 'User') {
+                            result+=`<p class="text-white fs-6 p-2 m-0 rounded ${response.data.author == 'User' ? 'bg-info' : 'bg-primary'}" style="text-align: justify">${response.data.message}</p>`;
+                            if(response.data.author == 'Admin') {
                                 result+=`<img style="height: 40px; width: 40px; object-fit: cover; object-position: center; border: 1px solid #28A349" src="${response.data.author_image}" class="rounded-circle p-1" alt="">`;
                             }
                             result+=`</div>
@@ -190,6 +197,7 @@
                             $('.empty_message').hide();
                             $('#message_text').val('');
                             $('.ticket_status').html(`<span class="${response.data.ticket.getStatusBadgeBg}">${response.data.ticket.getStatusBadgeTitle }</span>`);
+                            $('.ticket_close_button').html(`<a href="{{ route('ticket.close', encrypt($ticket->id)) }}" class="btn btn-danger"> {{__('Ticket Close')}}</a>`);
                             scrollToBottom();
                         }else{
                             handleErrors(response);

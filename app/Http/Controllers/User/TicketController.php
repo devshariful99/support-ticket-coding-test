@@ -5,19 +5,29 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TicketRequest;
 use App\Models\Ticket;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
 use App\Http\Traits\FileManagementTrait;
-
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class TicketController extends Controller
 {
     use FileManagementTrait;
-    public function create(): View
+
+
+    public function __construct()
     {
+        $this->middleware('auth');
+    }
+    public function create()
+    {
+        $ticket = Ticket::where('creater_id', user()->id)->where('creater_type', get_class(user()))->latest()->where('status', 1)->orWhere('status', 0)->first();
+        if ($ticket) {
+            session()->flash('warning', "You already have created a ticket $ticket->ticket_number. Please wait for response");
+            return redirect()->route('user.dashboard');
+        }
         return view('user.ticket.create');
     }
-    public function store(TicketRequest $req)
+    public function store(TicketRequest $req): RedirectResponse
     {
         $ticket = new Ticket();
         $ticket->ticket_number = generateTicketNumber();
@@ -30,9 +40,16 @@ class TicketController extends Controller
         return redirect()->route('user.dashboard');
     }
 
-    public function details(string $id)
+    public function details(string $id): View
     {
-        $ticket = Ticket::with('messages')->findOrFail(decrypt($id));
+        $ticket = Ticket::with('messages.creater')->findOrFail(decrypt($id));
+        $ticket->getStatusBadgeBg = $ticket->getStatusBadgeBg();
+        $ticket->getStatusBadgeTitle = $ticket->getStatusBadgeTitle();
+        $ticket->messages->each(function (&$message) {
+            $message->created_at = $message->created_at->diffForHumans();
+            $message->author = getModelName($message->creater_type);
+            $message->author_image = auth_storage_url($message->creater->image, $message->creater->gender);
+        });
         return view('user.ticket.details', compact('ticket'));
     }
 }

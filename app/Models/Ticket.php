@@ -12,7 +12,7 @@ class Ticket extends BaseModel
 
     public function messages()
     {
-        return $this->hasMany(Message::class, 'ticket_id', 'id');
+        return $this->hasMany(Message::class, 'ticket_id');
     }
 
     public function getStatusBadgeTitle()

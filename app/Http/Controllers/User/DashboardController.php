@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('web');
+        $this->middleware('auth');
     }
 
     public function dashboard(Request $request)
@@ -20,6 +20,9 @@ class DashboardController extends Controller
         if ($request->ajax()) {
             $tickets = $tickets->sortBy('status');
             return DataTables::of($tickets)
+                ->editColumn('ticket_number', function ($ticket) {
+                    return "<span>" . $ticket->ticket_number . "</span> <sup><span class='" . $ticket->getStatusBadgeBg() . "'>" . $ticket->getStatusBadgeTitle() . "</span></sup>";
+                })
                 ->editColumn('title', function ($ticket) {
                     return str_limit($ticket->title, 30);
                 })
@@ -39,7 +42,7 @@ class DashboardController extends Controller
                         ],
                     ]);
                 })
-                ->rawColumns(['title', 'description', 'status', 'created_at', 'action'])
+                ->rawColumns(['title', 'description', 'ticket_number', 'created_at', 'action'])
                 ->make(true);
         }
         return view('user.dashboard', compact('tickets'));

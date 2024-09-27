@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use App\Http\Traits\AuditColumnsDataTrait;
 use Yajra\DataTables\Facades\DataTables;
 use App\Http\Traits\FileManagementTrait;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\View\View;
 
 class AdminController extends Controller
 {
@@ -54,7 +57,7 @@ class AdminController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): View
     {
         return view('admin.admin_management.create');
     }
@@ -62,7 +65,7 @@ class AdminController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AdminRequest $req)
+    public function store(AdminRequest $req): RedirectResponse
     {
         $admin = new Admin();
         $this->handleFileUpload($req, $admin, 'image', 'admins/');
@@ -78,7 +81,7 @@ class AdminController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id)
+    public function show(int $id): JsonResponse
     {
         $data = Admin::findOrFail($id);
         $this->AdminAuditColumnsData($data);
@@ -89,7 +92,7 @@ class AdminController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(int $id)
+    public function edit(int $id): View
     {
         $data['admin'] = Admin::findOrFail($id);
         return view('admin.admin_management.edit', $data);
@@ -98,7 +101,7 @@ class AdminController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AdminRequest $req, int $id)
+    public function update(AdminRequest $req, int $id): RedirectResponse
     {
         $admin = Admin::findOrFail($id);
         $this->handleFileUpload($req, $admin, 'image', 'admins/');
@@ -116,7 +119,7 @@ class AdminController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(int $id)
+    public function destroy(int $id): RedirectResponse
     {
         $admin = Admin::findOrFail($id);
         $admin->update(['deleted_by' => admin()->id]);
@@ -125,7 +128,7 @@ class AdminController extends Controller
         return redirect()->route('admin.index');
     }
 
-    public function status(int $id)
+    public function status(int $id): RedirectResponse
     {
         $admin = Admin::findOrFail($id);
         $admin->status = !$admin->status;

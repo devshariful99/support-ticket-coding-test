@@ -40,6 +40,12 @@
                   <p>Users</p>
                 </a>
               </li>
+              <li class="nav-item  @if($page_slug == 'ticket') active @endif">
+                <a href="{{route('ticket.index')}}">
+                  <i class="fas fa-cart-arrow-down"></i>
+                  <p>Tickets</p>
+                </a>
+              </li>
 
                {{-- <li class="nav-item  @if($page_slug == 'admin' || $page_slug == 'role') active submenu @endif">
                 <a data-bs-toggle="collapse" href="#admin_management" @if($page_slug == 'admin') aria-expanded="true" @endif>

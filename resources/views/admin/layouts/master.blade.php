@@ -38,7 +38,7 @@
     @stack('css_links')
     <link rel="stylesheet" href="{{ asset('admin/assets/css/kaiadmin.min.css') }}" />
     {{-- Custom CSS   --}}
-    <link rel="stylesheet" href="{{ asset('admin/assets/css/custom.css') }}">
+    <link rel="stylesheet" href="{{ asset('admin/css/custom.css') }}">
     @stack('css')
 
     <!-- Scripts -->

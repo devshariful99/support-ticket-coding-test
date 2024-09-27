@@ -91,3 +91,9 @@ function isImage($path)
     $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
     return in_array($extension, $imageExtensions);
 }
+
+function getModelName($className)
+{
+    $className = basename(str_replace('\\', '/', $className));
+    return trim(preg_replace('/(?<!\ )[A-Z]/', ' $0', $className));
+}
