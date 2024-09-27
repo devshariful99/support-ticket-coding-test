@@ -110,8 +110,14 @@
                                 </li>
                             @endif
                         @else
+                            <li class="nav-item active">
+                                <a class="nav-link {{$page_slug == 'user-ticket' ? 'active' : ''}}" href="{{ route('user.ticket.index') }}">{{ __('Support') }}</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link {{$page_slug == 'user-dashboard' ? 'active' : ''}}" href="{{ route('user.dashboard') }}">{{ __('Dashboard') }}</a>
+                            </li>
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle fw-bold" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                                     {{ Auth::user()->name }}
                                 </a>
 

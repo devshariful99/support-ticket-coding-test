@@ -1,4 +1,4 @@
-@extends('user.layouts.master', ['page_slug' => 'ticket-create'])
+@extends('user.layouts.master', ['page_slug' => 'user-ticket'])
 @section('content')
 @section('content')
 <div class="container">
@@ -8,7 +8,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h4 class="cart-title">{{ __('Create Ticket') }}</h4>
                     @include('user.includes.button', [
-                            'routeName' => 'user.dashboard',
+                            'routeName' => 'user.ticket.index',
                             'label' => 'Back',
                         ])
                 </div>
@@ -17,12 +17,12 @@
                         @csrf
                         <div class="form-group">
                             <label>{{ __('Title') }}</label>
-                            <input type="text" name="title" class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}" placeholder="Enter title">
+                            <input type="text" value="{{ old('title') }}" name="title" class="form-control {{ $errors->has('title') ? ' is-invalid' : '' }}" placeholder="Enter title">
                             @include('alerts.feedback', ['field' => 'title'])
                         </div>
                         <div class="form-group">
                             <label>{{ __('Description') }}</label>
-                            <textarea name="description" class="form-control {{ $errors->has('description') ? ' is-invalid' : '' }}" placeholder="Enter description"></textarea>
+                            <textarea name="description" value="{{ old('description') }}" class="form-control {{ $errors->has('description') ? ' is-invalid' : '' }}" placeholder="Enter description"></textarea>
                             @include('alerts.feedback', ['field' => 'description'])
                         </div>
                         <div class="form-group">
@@ -31,7 +31,7 @@
                             @include('alerts.feedback', ['field' => 'files.*'])
                             @include('alerts.feedback', ['field' => 'files'])
                         </div>
-                        <div class="form-group float-end">
+                        <div class="form-group float-end mb-3">
                             <input type="submit" class="btn btn-primary" value="Create">
                         </div>
                     </form>

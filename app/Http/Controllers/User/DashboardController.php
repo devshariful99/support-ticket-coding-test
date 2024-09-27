@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Ticket;
+use App\Http\Requests\UserRequest;
+use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Yajra\DataTables\Facades\DataTables;
+use App\Http\Controllers\Admin\FileManageController;
+use App\Http\Traits\FileManagementTrait;
 
 class DashboardController extends Controller
 {
+    use FileManagementTrait;
     public function __construct()
     {
         $this->middleware('auth');
@@ -16,35 +20,22 @@ class DashboardController extends Controller
 
     public function dashboard(Request $request)
     {
-        $tickets = Ticket::where('creater_id', user()->id)->where('creater_type', get_class(user()))->latest()->get();
-        if ($request->ajax()) {
-            $tickets = $tickets->sortBy('status');
-            return DataTables::of($tickets)
-                ->editColumn('ticket_number', function ($ticket) {
-                    return "<span>" . $ticket->ticket_number . "</span> <sup><span class='" . $ticket->getStatusBadgeBg() . "'>" . $ticket->getStatusBadgeTitle() . "</span></sup>";
-                })
-                ->editColumn('title', function ($ticket) {
-                    return str_limit($ticket->title, 30);
-                })
-                ->editColumn('description', function ($ticket) {
-                    return str_limit($ticket->description, 45);
-                })
-                ->editColumn('status', function ($ticket) {
-                    return "<span class='" . $ticket->getStatusBadgeBg() . "'>" . $ticket->getStatusBadgeTitle() . "</span>";
-                })
-                ->editColumn('created_at', function ($ticket) {
-                    return timeFormat($ticket->created_at);
-                })
-                ->editColumn('action', function ($ticket) {
-                    return view('user.includes.action_buttons', [
-                        'menuItems' => [
-                            ['routeName' => 'user.ticket.details', 'params' => [encrypt($ticket->id)], 'label' => 'Details'],
-                        ],
-                    ]);
-                })
-                ->rawColumns(['title', 'description', 'ticket_number', 'created_at', 'action'])
-                ->make(true);
+        $user = User::findOrFail(user()->id);
+        return view('user.dashboard', compact('user'));
+    }
+
+    public function profileUpdate(UserRequest $req, int $id): RedirectResponse
+    {
+        $user = User::findOrFail($id);
+        $this->handleFileUpload($req, $user, 'image', 'users/');
+        $user->name = $req->name;
+        $user->email = $req->email;
+        if ($req->filled('password')) {
+            $user->password = $req->password;
         }
-        return view('user.dashboard', compact('tickets'));
+        $user->updater()->associate(user());
+        $user->update();
+        session()->flash('success', "Profile data updated successfully");
+        return redirect()->route('user.dashboard');
     }
 }

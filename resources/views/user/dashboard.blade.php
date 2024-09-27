@@ -6,56 +6,48 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="cart-title">{{ __('My Tickets') }}</h4>
-                    @include('user.includes.button', [
-                        'routeName' => 'user.ticket.create',
-                        'label' => 'Create New Ticket',
-                    ])
+                    <h4 class="cart-title">{{ __('My Dashboard') }}</h4>
                 </div>
                 <div class="card-body">
-                    <table class="table table-responsive nowrap table-striped datatable">
-                        <thead>
-                            <tr>
-                                <th>{{ __('SL') }}</th>
-                                <th>{{ __('Ticket Number') }}</th>
-                                <th>{{ __('Title') }}</th>
-                                <th>{{ __('Description') }}</th>
-                                <th>{{ __('Created Date') }}</th>
-                                <th>{{ __('Action') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <form action="{{ route('user.profile.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                        @method('PUT')
+                        @csrf
+                        <div class="form-group">
+                            <label>{{ __('Name') }}</label>
+                            <input type="text" name="name" value="{{ $user->name }}" class="form-control {{ $errors->has('name') ? ' is-invalid' : '' }}"
+                                placeholder="Enter name">
+                            @include('alerts.feedback', ['field' => 'name'])
+                        </div>
+                        <div class="form-group">
+                            <label>{{ __('Image') }}</label>
+                            <input type="file" accept="image/*" name="image" class="form-control {{ $errors->has('image') ? ' is-invalid' : '' }}">
+                            @include('alerts.feedback', ['field' => 'image'])
+                        </div>
+                        @if ($user->image)
+                            <img src="{{ auth_storage_url($user->image, $user->gender) }}" alt="" width="100" height="100">
+                        @endif
+                        <div class="form-group">
+                            <label>{{ __('Email') }}</label>
+                            <input type="text" name="email" value="{{ $user->email }}" class="form-control {{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                placeholder="Enter email">
+                            @include('alerts.feedback', ['field' => 'email'])
+                        </div>
+                        <div class="form-group">
+                            <label>{{ __('Password') }}</label>
+                            <input type="password" name="password" class="form-control {{ $errors->has('password') ? ' is-invalid' : '' }}" placeholder="Enter password">
+                            @include('alerts.feedback', ['field' => 'password'])
+                        </div>
+                        <div class="form-group">
+                            <label>{{ __('Confirm Password') }}</label>
+                            <input type="password" name="password_confirmation" class="form-control {{ $errors->has('password_confirmation') ? ' is-invalid' : '' }}"
+                                placeholder="Enter confirm password">
+                        </div>
+                        <div class="form-group float-end mt-3">
+                            <input type="submit" class="btn btn-primary" value="Update">
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 @endsection
-@push('js')
-    {{-- Datatable Scripts --}}
-    <script src="{{ asset('datatable/main.js') }}"></script>
-    <script>
-        $(document).ready(function() {
-            let table_columns = [
-                //name and data, orderable, searchable
-                ['ticket_number', true, true],
-                ['title', true, true],
-                ['description', false, false],
-                ['created_at', false, false],
-                ['action', false, false],
-            ];
-            const details = {
-                table_columns: table_columns,
-                main_class: '.datatable',
-                displayLength: 10,
-                main_route: "{{ route('user.dashboard') }}",
-                // order_route: "{{ route('user.update.sort.order') }}",
-                export_columns: [0, 1, 2, 3, 4],
-                model: 'Ticket',
-                rowOrder: false,
-            };
-            initializeDataTable(details);
-        })
-    </script>
-@endpush

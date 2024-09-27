@@ -1,4 +1,4 @@
-@extends('user.layouts.master', ['page_slug' => 'ticket-details'])
+@extends('user.layouts.master', ['page_slug' => 'user-ticket'])
 @push('css')
     <link rel="stylesheet" href="{{ asset('custom_litebox/litebox.css') }}">
     <style>
@@ -58,7 +58,7 @@
                         <h4 class="cart-title fw-bold">{{ __($ticket->title." - ($ticket->ticket_number)") }}</h4><sup class="ticket_status"><span class="{{$ticket->getStatusBadgeBg}}">{{ $ticket->getStatusBadgeTitle }}</span></sup>
                     </div>
                     @include('user.includes.button', [
-                            'routeName' => 'user.dashboard',
+                            'routeName' => 'user.ticket.index',
                             'label' => 'Back',
                         ])
                 </div>
@@ -117,12 +117,13 @@
                                 @endif
                             </div>
                     </div>
-                    <hr>
                     <div class="row">
                         <div class="col-12">
                             @if($ticket->status == 2)
+                            <hr>
                                 <h4 class="cart-title text-center text-danger" >{{__('Ticket Closed')}}</h4>
                             @elseif($ticket->status == 1)
+                            <hr>
                                 <form id="ticketMessageForm" action="{{ route('user.message.send') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
                                     <input type="hidden" name="ticket_id" value="{{ $ticket->id }}">

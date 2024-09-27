@@ -65,8 +65,12 @@ Route::group(['middleware' => 'admin', 'prefix' => 'admin-panel'], function () {
 Route::group(['middleware' => 'auth', 'as' => 'user.', 'prefix' => 'user-panel'], function () {
     Route::get('file/download/{file}', [UserFileManageController::class, 'download'])->name('file.download');
     Route::post('update/sort/order', [UserDatatableController::class, 'updateSortOrder'])->name('update.sort.order');
+
+
     Route::get('/', [UserDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::put('/profile/update/{admin}', [UserDashboardController::class, 'profileUpdate'])->name('profile.update');
     Route::controller(UserTicketController::class)->prefix('ticket')->name('ticket.')->group(function () {
+        Route::get('/index', 'index')->name('index');
         Route::get('/create', 'create')->name('create');
         Route::post('/create', 'store')->name('create');
         Route::get('/details/{id}', 'details')->name('details');

@@ -8,9 +8,11 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Yajra\DataTables\Facades\DataTables;
+use App\Http\Traits\TicketStatusMailTrait;
 
 class TicketController extends Controller
 {
+    use TicketStatusMailTrait;
     public function __construct()
     {
         $this->middleware('admin');
@@ -65,10 +67,13 @@ class TicketController extends Controller
 
     public function close(string $id): RedirectResponse
     {
-        $ticket = Ticket::findOrFail(decrypt($id));
+        $ticket = Ticket::with('creater')->findOrFail(decrypt($id));
         $ticket->status = 2;
         $ticket->updater()->associate(admin());
         $ticket->update();
+
+        $this->ticketCloseMail($ticket);
+
         session()->flash('success', "Ticket $ticket->ticket_number closed successfully");
         return redirect()->route('ticket.details', $id);
     }
